@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function() {
+  /* widget controller */
+	/*
+	Client-side API
+The client-side Widget API classes are:
+
+spUtil: Contains utility methods to perform common functions in a Service Portal widget client script. Access the methods from this class using spUtil. For example, spUtil.addErrorMessage().
+addErrorMessage(): display an error message
+addInfoMessage(): display an informational message
+addTrivialMessage(): display a message which automatically disappears after a short period of time
+format(): used to build strings from variables (alternative to concatenation)
+get(): gets a widget model by ID or sys_id
+recordWatch(): watches for updates to a table or filter and returns the value from a callback function
+refresh(): calls the server and replaces the current options and data objects with the server response
+update(): updates the data object on the server within a given scope
+spModal: Methods provide an alternative way to show alerts, prompts, and confirmation dialogs. Access the methods from this class using spModal. For example, spModal.alert().
+alert(): displays an alert
+confirm(): displays a confirmation message
+open(): opens a modal using the specified options
+prompt(): displays a prompt for user input
+spAriaUtil: Uses an AngularJS service to show messages on a screen reader. Access the method from this class using spAriaUtil. For example, spAriaUtil.sendLiveMessage().
+sendLiveMessage(): announce a message to a screen reader
+For the complete API documentation, including method arguments and return values, follow the links to the API classes.
+	*/
+  var c = this;
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>notes_list</id>
+        <internal>false</internal>
+        <link/>
+        <name>Notes List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  /*
+	Server-side API
+The server-side Widget API class is:
+
+GlideSPScriptable: Methods for use in Service Portal widget Server Scripts. Access the GlideSPScriptable methods using the global $sp object. For example, $sp.canRead().
+canReadRecord(): returns true if the user can read the specified GlideRecord
+getCatalogItem(): returns a model and view model for a sc_cat_item or sc_cat_item_guide
+getDisplayValue: returns the display value of the specified field from either the widget's sp_instance or sp_portal record
+getField(): returns information about the specified field in a GlideRecord
+getFields(): checks the specified list of field names, and returns an array of valid field names
+getFieldsObject(): checks the specified list of field names and returns an object of valid field names
+getForm(): returns the form
+getListColumns(): returns a list of the specified table's columns in the specified view
+getMenuHREF(): returns the (?id=) portion of the URL based on the sp_menu type
+getMenuItems(): returns an array of menu items for the specified instance
+getParameter(): returns the value of the specified parameter
+getPortalRecord(): returns the portal's GlideRecord
+getRecord(): returns the current portal context
+getRecordDisplayValues(): copies display values for the specified fields into the data parameter
+getRecordElements(): for the specified fields, copies the element's name, display value, and value into the data parameter
+getRecordValues(): copies values for the specified field names from the GlideRecord into the data parameter
+getStream(): gets the activity stream for the specified record. This method works on tables which extend the Task table
+getUserInitials(): returns the user's initials
+getValue(): returns the value of the specified parameter
+getValues(): copies values from the request or instance to the data parameter
+getWidget(): gets a widget by id or sys_id, executes that widget's server script using the provided options, then returns the widget model
+For the complete API documentation, including method arguments and return values, follow the links to the API classes.
+	*/
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-26 23:07:52</sys_created_on>
+        <sys_id>0ee1c975db0d330073c384da0b961983</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Notes List</sys_name>
+        <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
+        <sys_update_name>sp_widget_0ee1c975db0d330073c384da0b961983</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-26 23:28:10</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <h3 class="panel-title pull-left">
+      ${Notes}
+    </h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      Notes list widget
+    </p>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>
