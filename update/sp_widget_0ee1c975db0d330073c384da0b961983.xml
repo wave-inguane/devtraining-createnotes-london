@@ -61,9 +61,38 @@ DEVELOPER TIP: Avoid the use of $rootScope.$broadcast() because it can cause per
 
 $rootScope.$emit("eventName",{})--event-->$rootScope---event-->$rootScope.$on("eventName", function(event, dada)){}
 
+recordWatch()
+In the CreateNotes widgets, you are able create, update, and delete Notes records. What happens in the widgets if a 
+user creates a record using the standard ServiceNow UI (UI16)?
 
+Although the Notes List and Notes Body widgets have been developed to communicate with each other, 
+they are not notified of changes made to the Create Notes table records when the interaction happens 
+through the standard ServiceNow UI.
 
+Use the Client API method spUtil.recordWatch() to register a listener in a widget. The listener is 
+notified when table records are inserted, deleted, or updated
 
+spUtil.recordWatch($scope, "table_name", "filter", function(name) {
+		console.log(name); //Returns information about the event that has occurred
+		console.log(name.data); //Returns the data inserted or updated on the table
+	  });
+	}
+
+spUtil.recordWatch($scope,"incident","active=true",function(name){
+
+	// listen for changes to incident table records where the record is active i
+
+		console.log(name); //Returns information about the event that has occurred
+		console.log(name.data); //Returns the data inserted or updated on the table
+	  });
+	}
+
+	//GET QUERY FROM QUERY BUILDER
+	spUtil.recordWatch($scope,"incident","caller_idDYNAMIC90d1921e5f510100a9ad2572f2b477fe^active=true",function(name){
+
+		console.log(name.data.operation); 
+		console.log(name);
+	});
 	*/
 
 	var c = this;
@@ -119,6 +148,66 @@ $rootScope.$emit("eventName",{})--event-->$rootScope---event-->$rootScope.$on("e
 	});
 
 
+	// Record removed from data object on the client and passed to server
+	c.snNoteUpdate = function(name,sysID){
+
+		for (var i=0;i<c.data.notes.length;i++){
+			if(c.data.notes[i].sys_id == name.data.sys_id){
+				if(name.data.record.note){
+					c.data.notes[i].note = name.data.record.note.display_value;
+				}
+				if(name.data.record.title){
+					c.data.notes[i].title = name.data.record.title.display_value;
+				}
+				c.server.update();
+
+			}
+		}
+	}
+
+	// Record removed from data object on the server and passed back to client
+	c.snNoteDelete = function(sysID){
+
+		c.server.get({
+			action: 'snDeleteNote',
+			noteID: sysID
+
+		}).then(function(r){
+			c.data.notes = r.data.notes;
+		});
+
+	}
+
+	//-------------------------------------------------------------------
+	//  Use Record Watch
+	//-------------------------------------------------------------------
+	spUtil.recordWatch($scope, "x_snc_createnotes_note", "numberANYTHING", function(name) {
+		console.log("OPERATION : "+name.data.operation); 
+		console.log("NAME : "+name); 
+
+		//  Respond to the Record Insert
+		// Fast and easy... replace the client data object with the server data object
+		if(name.data.operation == "insert"){
+			c.server.refresh();
+		}
+
+		// Respond to Record Update and Delete - Client Script
+		// Calls a Client Script function to do the update and pass the updated data object
+		// to the server.
+		if(name.data.operation == "update"){
+			c.snNoteUpdate(name, name.data.sys_id);
+		}
+
+
+		// Calls a Client Script function which does the update on the server and passes
+		// the updated data object back to the client.
+		if(name.data.operation == "delete"){
+			c.snNoteDelete(name.data.sys_id);
+		}
+
+	});
+
+
 
 
 
@@ -138,7 +227,7 @@ $rootScope.$emit("eventName",{})--event-->$rootScope---event-->$rootScope.$on("e
         <internal>false</internal>
         <link/>
         <name>Notes List</name>
-        <option_schema/>
+        <option_schema>[{"hint":"Specify a title for the Notes List widget","name":"title","section":"other","default_value":"NOTES NAV BAR","label":"Title","type":"string"},{"hint":"Select the maximum number of records to display","name":"maximum_records_to_display","section":"other","default_value":"5","label":"Maximum records to display","type":"choice","choices":[{"label":"2","value":"2"},{"label":"3","value":"3"},{"label":"5","value":"5"},{"label":"7","value":"7"},{"label":"11","value":"11"},{"label":"13","value":"13"},{"label":"17","value":"17"}]}]</option_schema>
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
@@ -185,6 +274,13 @@ gs.debug() - Scoped API
 gs.error() - Scoped API
 gs.addInfoMessage() - Scoped API and Global API
 gs.addErrorMessage() - Scoped API and Global API
+
+
+
+Widget Option Schema
+Using widgets options makes widgets more easily reusable. The widget option schema defines 
+the user-configurable fields. To add, edit, or delete option fields, select the Edit 
+Options Schema menu item in the Widget Editor menu.
 	*/
 
 
@@ -195,6 +291,7 @@ gs.addErrorMessage() - Scoped API and Global API
 	var noteGR = new GlideRecord('x_snc_createnotes_note');
 	noteGR.addQuery('user', gs.getUser().getID());
 	noteGR.orderByDesc('sys_created_on');
+	noteGR.setLimit(options.maximum_records_to_display);
 	noteGR.query();
 	while (noteGR.next()) {
 		var noteObj = {};
@@ -215,6 +312,16 @@ gs.addErrorMessage() - Scoped API and Global API
 			data.noteID = id;
 			data.newNote = {};
 			$sp.getRecordValues(data.newNote,newNote,"title,note,sys_id");
+
+		}
+
+		if (input.action == 'snDeleteNote') {
+			var delNote = new GlideRecord('x_snc_createnotes_note');
+			// The notes record should already be gone.  Just
+			// making sure it no longer exists.
+			if(delNote.get(input.noteID)){
+				delNote.deleteRecord();
+			}
 
 		}
 	}
@@ -255,18 +362,19 @@ gs.addErrorMessage() - Scoped API and Global API
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-26 23:07:52</sys_created_on>
         <sys_id>0ee1c975db0d330073c384da0b961983</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>51</sys_mod_count>
         <sys_name>Notes List</sys_name>
         <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
         <sys_policy/>
         <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
         <sys_update_name>sp_widget_0ee1c975db0d330073c384da0b961983</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-04-27 14:58:00</sys_updated_on>
+        <sys_updated_on>2019-04-27 16:39:52</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default">
   <div class="panel-heading clearfix">
     <h3 class="panel-title pull-left">
-      ${Notes}
+      <!--${Notes}-->
+      {{::c.options.title}}
     </h3>
     <button class="btn btn-default pull-right" ng-click="c.newNote()"> 
       <span class="glyphicon glyphicon-plus"></span> 
