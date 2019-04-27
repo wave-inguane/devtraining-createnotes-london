@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($rootScope,$scope) {
+        <client_script><![CDATA[function($rootScope,$scope,spUtil) {
 	/* widget controller */
 	/*
 	Client-side API
@@ -34,6 +34,16 @@ spUtil.addInfoMessage()
 spUtil.addTrivialMessage()
 spModal.alert()
 
+Using the Client-side Widget API
+In an earlier part of this module, you learned there are three client-side Widget APIs:
+
+spUtil: Contains utility methods to perform common functions in a Service Portal widget client script.
+spModal: Methods provide an alternative way to show alerts, prompts, and confirmation dialogs.
+spAriaUtil: Uses an AngularJS service to show messages on a screen reader.
+In order to use classes from the client-side Widget API, the global object for the API must be passed as a dependency to the Client Script. The Client Script creates the AngularJS controller using the passed in dependencies.
+
+If a Client Script attempts to use a client-side Widget API without passing the dependency, a ReferenceError occurs at runtime.
+
 
 Using AngularJS Events with Widgets
 AngularJS uses a publish and subscribe strategy for handling events. Events are useful for notifying widgets about important things happening in other widgets. For example:
@@ -51,9 +61,18 @@ DEVELOPER TIP: Avoid the use of $rootScope.$broadcast() because it can cause per
 
 $rootScope.$emit("eventName",{})--event-->$rootScope---event-->$rootScope.$on("eventName", function(event, dada)){}
 
+
+
+
 	*/
 
 	var c = this;
+	
+	spUtil.addInfoMessage("Welcome");
+	
+	
+	
+	
 	c.selectItem = function(idx) {//powerful tool
 		
 		var id = c.data.notes[idx].sys_id;
@@ -197,14 +216,14 @@ gs.addErrorMessage() - Scoped API and Global API
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-26 23:07:52</sys_created_on>
         <sys_id>0ee1c975db0d330073c384da0b961983</sys_id>
-        <sys_mod_count>23</sys_mod_count>
+        <sys_mod_count>26</sys_mod_count>
         <sys_name>Notes List</sys_name>
         <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
         <sys_policy/>
         <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
         <sys_update_name>sp_widget_0ee1c975db0d330073c384da0b961983</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-04-27 13:29:53</sys_updated_on>
+        <sys_updated_on>2019-04-27 14:20:06</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default">
   <div class="panel-heading clearfix">
     <h3 class="panel-title pull-left b">
