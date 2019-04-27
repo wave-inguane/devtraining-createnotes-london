@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function() {
-  /* widget controller */
+        <client_script><![CDATA[function($rootScope,$scope) {
+	/* widget controller */
 	/*
 	Client-side API
 The client-side Widget API classes are:
@@ -24,8 +24,60 @@ prompt(): displays a prompt for user input
 spAriaUtil: Uses an AngularJS service to show messages on a screen reader. Access the method from this class using spAriaUtil. For example, spAriaUtil.sendLiveMessage().
 sendLiveMessage(): announce a message to a screen reader
 For the complete API documentation, including method arguments and return values, follow the links to the API classes.
+
+
+Client-side Debugging
+The client-side Widget API includes methods which can be used for logging/debugging:
+
+spUtil.addErrorMessage()
+spUtil.addInfoMessage()
+spUtil.addTrivialMessage()
+spModal.alert()
+
+
+Using AngularJS Events with Widgets
+AngularJS uses a publish and subscribe strategy for handling events. Events are useful for notifying widgets about important things happening in other widgets. For example:
+
+Record selected
+Changed value
+Data deleted
+Data added
+And more....
+Work with events in AngularJS using these functions:
+
+$emit(): Send an event up the scope hierarchy
+$on(): Listen for events of a given type
+DEVELOPER TIP: Avoid the use of $rootScope.$broadcast() because it can cause performance issues.
+
+$rootScope.$emit("eventName",{})--event-->$rootScope---event-->$rootScope.$on("eventName", function(event, dada)){}
+
 	*/
-  var c = this;
+
+	var c = this;
+	c.selectItem = function(idx) {//powerful tool
+		
+		var id = c.data.notes[idx].sys_id;
+		$rootScope.noteID = id;
+		//console.log('Note ID: ' + id);
+		
+		//Send data to other widgets including embeded ones
+		$rootScope.$emit('selectNote', id);
+		$rootScope.$broadcast('selectNote2', {"sys_id" : id});
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }]]></client_script>
         <controller_as>c</controller_as>
         <css/>
@@ -34,7 +86,7 @@ For the complete API documentation, including method arguments and return values
         <description/>
         <docs/>
         <field_list/>
-        <has_preview>false</has_preview>
+        <has_preview>true</has_preview>
         <id>notes_list</id>
         <internal>false</internal>
         <link/>
@@ -43,9 +95,9 @@ For the complete API documentation, including method arguments and return values
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
-  /* populate the 'data' object */
-  /* e.g., data.table = $sp.getValue('table'); */
-  /*
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	/*
 	Server-side API
 The server-side Widget API class is:
 
@@ -72,31 +124,100 @@ getValue(): returns the value of the specified parameter
 getValues(): copies values from the request or instance to the data parameter
 getWidget(): gets a widget by id or sys_id, executes that widget's server script using the provided options, then returns the widget model
 For the complete API documentation, including method arguments and return values, follow the links to the API classes.
+
+
+	Server-side Debugging
+The server-side GlideSystem class includes methods which can be used for logging/debugging:
+
+gs.log() - Global API
+gs.logError() - Global API
+gs.logWarning() - Global API
+gs.warn() - Scoped API
+gs.info() - Scoped API
+gs.debug() - Scoped API
+gs.error() - Scoped API
+gs.addInfoMessage() - Scoped API and Global API
+gs.addErrorMessage() - Scoped API and Global API
 	*/
-})();]]></script>
+
+
+
+	//create an array to populate without notes
+	data.notes = [];
+	
+	var noteGR = new GlideRecord('x_snc_createnotes_note');
+	noteGR.addQuery('user', gs.getUser().getID());
+	noteGR.orderByDesc('sys_created_on');
+	noteGR.query();
+	while (noteGR.next()) {
+		var noteObj = {};
+		//use service portal helper method to get some display values
+		$sp.getRecordDisplayValues(noteObj, noteGR, 'number,title,sys_id');
+		//get the first 20 characters of the description
+		noteObj.note = noteGR.getValue('note').slice(0,20);
+		//push the populated obj into the array
+		data.notes.push(noteObj);
+	}
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-26 23:07:52</sys_created_on>
         <sys_id>0ee1c975db0d330073c384da0b961983</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>19</sys_mod_count>
         <sys_name>Notes List</sys_name>
         <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
         <sys_policy/>
         <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
         <sys_update_name>sp_widget_0ee1c975db0d330073c384da0b961983</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-04-26 23:28:10</sys_updated_on>
+        <sys_updated_on>2019-04-27 12:34:40</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default">
   <div class="panel-heading clearfix">
-    <h3 class="panel-title pull-left">
-      ${Notes}
+    <h3 class="panel-title pull-left b">
+      ${Notes Navigation Menu}
     </h3>
   </div>
-  <div class="panel-body">
-    <p>
-      Notes list widget
-    </p>
+  <div class="list-group">
+    <a class="list-group-item" ng-click="c.selectItem($index)" ng-repeat="note in data.notes">
+      <h4 class="list-group-item-heading">
+        {{note.title}}
+      </h4>
+      <p class="list-group-item-text">
+        {{note.note}}
+      </p>
+    </a>
   </div>
 </div>]]></template>
     </sp_widget>
