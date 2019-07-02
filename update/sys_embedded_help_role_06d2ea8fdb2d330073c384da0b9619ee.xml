@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_embedded_help_role">
+    <sys_embedded_help_role action="INSERT_OR_UPDATE">
+        <order>1000</order>
+        <role display_value="x_287875_scripting.user" name="x_287875_scripting.user">82d2ea8fdb2d330073c384da0b9619ec</role>
+        <sys_class_name>sys_embedded_help_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-25 23:54:43</sys_created_on>
+        <sys_id>06d2ea8fdb2d330073c384da0b9619ee</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>82d2ea8fdb2d330073c384da0b9619ec</sys_name>
+        <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
+        <sys_update_name>sys_embedded_help_role_06d2ea8fdb2d330073c384da0b9619ee</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-25 23:54:43</sys_updated_on>
+    </sys_embedded_help_role>
+</record_update>
